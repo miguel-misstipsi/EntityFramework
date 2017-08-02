@@ -237,11 +237,17 @@ namespace Microsoft.EntityFrameworkCore.TestModels.GearsOfWarModel
             IReadOnlyList<Faction> factions)
         {
             squadMissions[0].Mission = missions[0];
+            squadMissions[0].MissionId = missions[0].Id;
             squadMissions[0].Squad = squads[0];
+            squadMissions[0].SquadId = squads[0].Id;
             squadMissions[1].Mission = missions[1];
+            squadMissions[1].MissionId = missions[1].Id;
             squadMissions[1].Squad = squads[0];
+            squadMissions[1].SquadId = squads[0].Id;
             squadMissions[2].Mission = missions[2];
+            squadMissions[2].MissionId = missions[2].Id;
             squadMissions[2].Squad = squads[1];
+            squadMissions[2].SquadId = squads[1].Id;
 
             missions[0].ParticipatingSquads = new List<SquadMission> { squadMissions[0] };
             missions[1].ParticipatingSquads = new List<SquadMission> { squadMissions[1] };

@@ -23,8 +23,6 @@ namespace Microsoft.EntityFrameworkCore.TestModels.ComplexNavigationsModel
 
         public IReadOnlyList<InheritanceBase1> InheritanceBaseOnes { get; }
         public IReadOnlyList<InheritanceBase2> InheritanceBaseTwos { get; }
-        public IReadOnlyList<InheritanceDerived1> InheritanceDerivedOnes { get; }
-        public IReadOnlyList<InheritanceDerived2> InheritanceDerivedTwos { get; }
         public IReadOnlyList<InheritanceLeaf1> InheritanceLeafOnes { get; }
         public IReadOnlyList<InheritanceLeaf2> InheritanceLeafTwos { get; }
 

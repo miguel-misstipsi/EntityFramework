@@ -2918,168 +2918,112 @@ namespace Microsoft.EntityFrameworkCore.Query
         [ConditionalFact]
         public virtual void Include_reference_on_derived_type_using_string()
         {
-            using (var context = CreateContext())
-            {
-                var query = context.LocustLeaders.Include("DefeatedBy");
-                var result = query.ToList();
+            AssertIncludeQuery<LocustLeader>(
+                lls => lls.Include("DefeatedBy"),
+                new List<IExpectedInclude> { new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy") });
 
-                var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
+            //using (var context = CreateContext())
+            //{
+            //    var query = context.LocustLeaders.Include("DefeatedBy");
+            //    var result = query.ToList();
 
-                Assert.Equal(6, result.Count);
-                Assert.Equal(1, included.Count);
-                Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-            }
+            //    var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
+
+            //    Assert.Equal(6, result.Count);
+            //    Assert.Equal(1, included.Count);
+            //    Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
+            //}
         }
 
         [ConditionalFact]
         public virtual void Include_reference_on_derived_type_using_string_nested1()
         {
-            using (var context = CreateContext())
+            var expectedIncludes = new List<IExpectedInclude>
             {
-                var query = context.LocustLeaders.Include("DefeatedBy.Squad");
-                var result = query.ToList();
+                new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy"),
+                new ExpectedInclude<Gear>(g => g.Squad, "Squad", "DefeatedBy"),
+            };
 
-                var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
-
-                Assert.Equal(6, result.Count);
-                Assert.Equal(1, included.Count);
-                Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-            }
+            AssertIncludeQuery<LocustLeader>(
+                lls => lls.Include("DefeatedBy.Squad"),
+                expectedIncludes);
         }
 
         [ConditionalFact]
         public virtual void Include_reference_on_derived_type_using_string_nested2()
         {
-            using (var context = CreateContext())
+            var expectedIncludes = new List<IExpectedInclude>
             {
-                var query = context.LocustLeaders.Include("DefeatedBy.Reports.CityOfBirth");
-                var result = query.ToList();
+                new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy"),
+                new ExpectedInclude<Officer>(o => o.Reports, "Reports", "DefeatedBy"),
+                new ExpectedInclude<Gear>(g => g.CityOfBirth, "CityOfBirth", "DefeatedBy.Reports"),
+            };
 
-                var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
-
-                Assert.Equal(6, result.Count);
-                Assert.Equal(1, included.Count);
-                Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-            }
+            AssertIncludeQuery<LocustLeader>(
+                lls => lls.Include("DefeatedBy.Reports.CityOfBirth"),
+                expectedIncludes);
         }
 
         [ConditionalFact]
         public virtual void Include_reference_on_derived_type_using_lambda()
         {
-            using (var context = CreateContext())
-            {
-                var query = context.LocustLeaders.Include((LocustCommander ll) => ll.DefeatedBy);
-                var result = query.ToList();
-
-                var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
-
-                Assert.Equal(6, result.Count);
-                Assert.Equal(1, included.Count);
-                Assert.Equal("Queen Myrrah", included[0].Name);
-                Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-            }
+            AssertIncludeQuery<LocustLeader>(
+                lls => lls.Include((LocustCommander ll) => ll.DefeatedBy),
+                new List<IExpectedInclude> { new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy") });
         }
 
         [ConditionalFact]
         public virtual void Include_reference_on_derived_type_using_lambda_with_tracking()
         {
-            using (var context = CreateContext())
-            {
-                var query = context.LocustLeaders.AsTracking().Include((LocustCommander ll) => ll.DefeatedBy);
-                var result = query.ToList();
-
-                var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
-
-                Assert.Equal(6, result.Count);
-                Assert.Equal(1, included.Count);
-                Assert.Equal("Queen Myrrah", included[0].Name);
-                Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-                Assert.Equal(7, context.ChangeTracker.Entries().Count());
-            }
+            AssertIncludeQuery<LocustLeader>(
+                lls => lls.AsTracking().Include((LocustCommander ll) => ll.DefeatedBy),
+                new List<IExpectedInclude> { new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy") },
+                entryCount: 7);
         }
 
         [ConditionalFact]
         public virtual void Include_collection_on_derived_type_using_string()
         {
-            using (var context = CreateContext())
-            {
-                var query = context.Gears.Include("Reports");
-                var result = query.ToList();
-
-                var included = result.OfType<Officer>().Where(lc => lc.Reports.Any()).OrderBy(g => g.Nickname).ToList();
-
-                Assert.Equal(5, result.Count);
-                Assert.Equal(2, included.Count);
-                Assert.Equal("Baird", included[0].Nickname);
-                Assert.Equal(1, included[0].Reports.Count);
-                Assert.Equal("Marcus", included[1].Nickname);
-                Assert.Equal(3, included[1].Reports.Count);
-            }
+            AssertIncludeQuery<Gear>(
+                gs => gs.Include("Reports"),
+                new List<IExpectedInclude> { new ExpectedInclude<Officer>(o => o.Reports, "Reports") });
         }
 
         [ConditionalFact]
         public virtual void Include_collection_on_derived_type_using_lambda()
         {
-            using (var context = CreateContext())
-            {
-                var query = context.Gears.Include((Officer g) => g.Reports);
-                var result = query.ToList();
-
-                var included = result.OfType<Officer>().Where(lc => lc.Reports.Any()).OrderBy(g => g.Nickname).ToList();
-
-                Assert.Equal(5, result.Count);
-                Assert.Equal(2, included.Count);
-                Assert.Equal("Baird", included[0].Nickname);
-                Assert.Equal(1, included[0].Reports.Count);
-                Assert.Equal("Marcus", included[1].Nickname);
-                Assert.Equal(3, included[1].Reports.Count);
-            }
+            AssertIncludeQuery<Gear>(
+                gs => gs.Include((Officer g) => g.Reports),
+                new List<IExpectedInclude> { new ExpectedInclude<Officer>(o => o.Reports, "Reports") });
         }
 
         [ConditionalFact]
         public virtual void Include_base_navigation_on_derived_entity()
         {
-            using (var context = CreateContext())
+            var expectedIncludes = new List<IExpectedInclude>
             {
-                var query = context.Gears
-                    .Include((Officer g) => g.Tag)
-                    .Include((Officer g) => g.Weapons);
+                new ExpectedInclude<Officer>(e => e.Tag, "Tag"),
+                new ExpectedInclude<Officer>(e => e.Weapons, "Weapons")
+            };
 
-                var result = query.ToList();
-
-                var included = result.OfType<Officer>().OrderBy(o => o.Nickname).ToList();
-
-                Assert.Equal(5, result.Count);
-                Assert.Equal(2, included.Count);
-                Assert.Equal("Baird's Tag", included[0].Tag.Note);
-                Assert.Equal(2, included[0].Weapons.Count);
-                Assert.Equal("Marcus' Tag", included[1].Tag.Note);
-                Assert.Equal(2, included[0].Weapons.Count);
-            }
+            AssertIncludeQuery<Gear>(
+                gs => gs.Include((Officer g) => g.Tag).Include((Officer g) => g.Weapons),
+                expectedIncludes);
         }
 
         [ConditionalFact]
         public virtual void Include_on_derived_multi_level()
         {
-            using (var context = CreateContext())
+            var expectedIncludes = new List<IExpectedInclude>
             {
-                var query = context.Gears
-                    .Include((Officer g) => g.Reports)
-                    .ThenInclude(g => g.Squad.Missions);
+                new ExpectedInclude<Officer>(e => e.Reports, "Reports"),
+                new ExpectedInclude<Gear>(e => e.Squad, "Squad", "Reports"),
+                new ExpectedInclude<Squad>(e => e.Missions, "Missions", "Reports.Squad")
+            };
 
-                var result = query.ToList();
-                var included = result.OfType<Officer>().OrderBy(o => o.Nickname).ToList();
-
-                Assert.Equal(5, result.Count);
-                Assert.Equal(2, included.Count);
-                Assert.Equal(1, included[0].Reports.Count);
-                Assert.Equal("Paduk", included[0].Reports.First().Nickname);
-                Assert.Equal("Kilo", included[0].Reports.First().Squad.Name);
-                Assert.Equal(1, included[0].Reports.First().Squad.Missions.Count);
-                Assert.Equal(3, included[1].Reports.Count);
-                Assert.Equal("Delta", included[1].Reports.First().Squad.Name);
-                Assert.Equal(2, included[1].Reports.First().Squad.Missions.Count);
-            }
+            AssertIncludeQuery<Gear>(
+                gs => gs.Include((Officer g) => g.Reports).ThenInclude(g => g.Squad.Missions),
+                expectedIncludes);
         }
 
         [ConditionalFact]
