@@ -156,7 +156,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                 {
                     var newNavigationPaths = new List<List<INavigation>>();
                     var matchingNavigations = false;
-                    foreach (var navigationPath in navigationPaths)
+                    foreach (var navigationPath in navigationPaths.Where(p => p.Count == i))
                     {
                         entityType = navigationPath.Last().GetTargetType();
                         navigations = FindNavigations(entityType, NavigationPropertyPaths[i]);
@@ -179,7 +179,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                             CoreStrings.IncludeBadNavigation(NavigationPropertyPaths[i], entityType.DisplayName()));
                     }
 
-                    navigationPaths = newNavigationPaths;
+                    navigationPaths.AddRange(newNavigationPaths);
                 }
 
                 _navigationPaths = navigationPaths.Select(p => p.ToArray()).ToList();

@@ -3638,19 +3638,18 @@ namespace Microsoft.EntityFrameworkCore.Query
        }
 
         [ConditionalFact]
-        public virtual void String_include_multiple_derived_navigation_with_same_name_and_different_type_nested_only_includes_fully_matching_navigations()
+        public virtual void String_include_multiple_derived_navigation_with_same_name_and_different_type_nested_also_includes_partially_matching_navigation_chains()
         {
             var expectedIncludes = new List<IExpectedInclude>
             {
+                new ExpectedInclude<InheritanceDerived1>(e => e.ReferenceDifferentType, "ReferenceDifferentType"),
                 new ExpectedInclude<InheritanceDerived2>(e => e.ReferenceDifferentType, "ReferenceDifferentType"),
                 new ExpectedInclude<InheritanceLeaf2>(e => e.BaseCollection, "BaseCollection", "ReferenceDifferentType")
             };
 
-            var result = AssertIncludeQuery<InheritanceBase1>(
+            AssertIncludeQuery<InheritanceBase1>(
                 i1s => i1s.Include("ReferenceDifferentType.BaseCollection"),
                 expectedIncludes);
-
-            Assert.True(result.OfType<InheritanceDerived1>().All(e => e.ReferenceDifferentType == null));
         }
 
         [ConditionalFact]
@@ -3682,19 +3681,18 @@ namespace Microsoft.EntityFrameworkCore.Query
         }
 
         [ConditionalFact]
-        public virtual void String_include_multiple_derived_collection_navigation_with_same_name_and_different_type_nested_only_includes_fully_matching_navigations()
+        public virtual void String_include_multiple_derived_collection_navigation_with_same_name_and_different_type_nested_also_includes_partially_matching_navigation_chains()
         {
             var expectedIncludes = new List<IExpectedInclude>
             {
+                new ExpectedInclude<InheritanceDerived1>(e => e.CollectionDifferentType, "CollectionDifferentType"),
                 new ExpectedInclude<InheritanceDerived2>(e => e.CollectionDifferentType, "CollectionDifferentType"),
                 new ExpectedInclude<InheritanceLeaf2>(e => e.BaseCollection, "BaseCollection", "ReferenceDifferentType")
             };
 
-            var result = AssertIncludeQuery<InheritanceBase1>(
+            AssertIncludeQuery<InheritanceBase1>(
                 i1s => i1s.Include("CollectionDifferentType.BaseCollection"),
                 expectedIncludes);
-
-            Assert.True(result.OfType<InheritanceDerived1>().All(e => e.CollectionDifferentType == null));
         }
 
         [ConditionalFact]
