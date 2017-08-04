@@ -212,6 +212,16 @@ namespace Microsoft.EntityFrameworkCore.Query
                     return (IQueryable<TEntity>)GetLevelFour(context);
                 }
 
+                if (typeof(TEntity) == typeof(InheritanceBase1))
+                {
+                    return context.Set<TEntity>();
+                }
+
+                if (typeof(TEntity) == typeof(InheritanceBase2))
+                {
+                    return context.Set<TEntity>();
+                }
+
                 throw new NotImplementedException();
             }
 
@@ -250,6 +260,16 @@ namespace Microsoft.EntityFrameworkCore.Query
                 if (typeof(TEntity) == typeof(Level4))
                 {
                     return (IQueryable<TEntity>)GetExpectedLevelFour();
+                }
+
+                if (typeof(TEntity) == typeof(InheritanceBase1))
+                {
+                    return (IQueryable<TEntity>)InheritanceBaseOnes.AsQueryable();
+                }
+
+                if (typeof(TEntity) == typeof(InheritanceBase2))
+                {
+                    return (IQueryable<TEntity>)InheritanceBaseTwos.AsQueryable();
                 }
 
                 throw new NotImplementedException();

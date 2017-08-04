@@ -3352,27 +3352,36 @@ FROM [InheritanceOne] AS [i]
 WHERE [i].[Discriminator] IN (N'InheritanceDerived2', N'InheritanceDerived1', N'InheritanceBase1')
 ORDER BY [i].[Id]",
                 //
-                @"SELECT [i.CollectionDifferentType].[Id], [i.CollectionDifferentType].[DifferentTypeReference_InheritanceDerived2Id], [i.CollectionDifferentType].[InheritanceDerived2Id], [i.CollectionDifferentType].[Name]
-FROM [InheritanceLeafTwo] AS [i.CollectionDifferentType]
+                @"SELECT [i.CollectionDifferentType].[Id], [i.CollectionDifferentType].[DifferentTypeReference_InheritanceDerived1Id], [i.CollectionDifferentType].[InheritanceDerived1Id], [i.CollectionDifferentType].[InheritanceDerived1Id1], [i.CollectionDifferentType].[InheritanceDerived2Id], [i.CollectionDifferentType].[Name], [i.CollectionDifferentType].[SameTypeReference_InheritanceDerived1Id], [i.CollectionDifferentType].[SameTypeReference_InheritanceDerived2Id]
+FROM [InheritanceLeafOne] AS [i.CollectionDifferentType]
 INNER JOIN (
     SELECT [i0].[Id]
     FROM [InheritanceOne] AS [i0]
     WHERE [i0].[Discriminator] IN (N'InheritanceDerived2', N'InheritanceDerived1', N'InheritanceBase1')
-) AS [t] ON [i.CollectionDifferentType].[InheritanceDerived2Id] = [t].[Id]
-ORDER BY [t].[Id], [i.CollectionDifferentType].[Id]",
+) AS [t] ON [i.CollectionDifferentType].[InheritanceDerived1Id] = [t].[Id]
+ORDER BY [t].[Id]",
+                //
+                @"SELECT [i.CollectionDifferentType0].[Id], [i.CollectionDifferentType0].[DifferentTypeReference_InheritanceDerived2Id], [i.CollectionDifferentType0].[InheritanceDerived2Id], [i.CollectionDifferentType0].[Name]
+FROM [InheritanceLeafTwo] AS [i.CollectionDifferentType0]
+INNER JOIN (
+    SELECT [i1].[Id]
+    FROM [InheritanceOne] AS [i1]
+    WHERE [i1].[Discriminator] IN (N'InheritanceDerived2', N'InheritanceDerived1', N'InheritanceBase1')
+) AS [t0] ON [i.CollectionDifferentType0].[InheritanceDerived2Id] = [t0].[Id]
+ORDER BY [t0].[Id], [i.CollectionDifferentType0].[Id]",
                 //
                 @"SELECT [i.CollectionDifferentType.BaseCollection].[Id], [i.CollectionDifferentType.BaseCollection].[InheritanceLeaf2Id], [i.CollectionDifferentType.BaseCollection].[Name]
 FROM [InheritanceTwo] AS [i.CollectionDifferentType.BaseCollection]
 INNER JOIN (
-    SELECT DISTINCT [i.CollectionDifferentType0].[Id], [t0].[Id] AS [Id0]
-    FROM [InheritanceLeafTwo] AS [i.CollectionDifferentType0]
+    SELECT DISTINCT [i.CollectionDifferentType1].[Id], [t1].[Id] AS [Id0]
+    FROM [InheritanceLeafTwo] AS [i.CollectionDifferentType1]
     INNER JOIN (
-        SELECT [i1].[Id]
-        FROM [InheritanceOne] AS [i1]
-        WHERE [i1].[Discriminator] IN (N'InheritanceDerived2', N'InheritanceDerived1', N'InheritanceBase1')
-    ) AS [t0] ON [i.CollectionDifferentType0].[InheritanceDerived2Id] = [t0].[Id]
-) AS [t1] ON [i.CollectionDifferentType.BaseCollection].[InheritanceLeaf2Id] = [t1].[Id]
-ORDER BY [t1].[Id0], [t1].[Id]");
+        SELECT [i2].[Id]
+        FROM [InheritanceOne] AS [i2]
+        WHERE [i2].[Discriminator] IN (N'InheritanceDerived2', N'InheritanceDerived1', N'InheritanceBase1')
+    ) AS [t1] ON [i.CollectionDifferentType1].[InheritanceDerived2Id] = [t1].[Id]
+) AS [t2] ON [i.CollectionDifferentType.BaseCollection].[InheritanceLeaf2Id] = [t2].[Id]
+ORDER BY [t2].[Id0], [t2].[Id]");
         }
 
         public override void String_include_multiple_derived_navigations_complex()

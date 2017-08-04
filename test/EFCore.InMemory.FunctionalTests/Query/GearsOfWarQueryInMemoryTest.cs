@@ -12,5 +12,10 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
             //TestLoggerFactory.TestOutputHelper = testOutputHelper;
         }
+
+        public override void Include_reference_on_derived_type_using_string_nested2()
+        {
+            base.Include_reference_on_derived_type_using_string_nested2();
+        }
     }
 }

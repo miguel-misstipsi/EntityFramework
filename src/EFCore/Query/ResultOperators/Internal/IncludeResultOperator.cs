@@ -138,6 +138,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                             NavigationPropertyPaths.FirstOrDefault()));
                 }
 
+                var completedNavigationPaths = new List<List<INavigation>>();
                 var navigationPaths = new List<List<INavigation>>();
                 var navigations = FindNavigations(entityType, NavigationPropertyPaths.First());
                 if (!navigations.Any())
@@ -156,7 +157,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                 {
                     var newNavigationPaths = new List<List<INavigation>>();
                     var matchingNavigations = false;
-                    foreach (var navigationPath in navigationPaths.Where(p => p.Count == i))
+                    foreach (var navigationPath in navigationPaths)
                     {
                         entityType = navigationPath.Last().GetTargetType();
                         navigations = FindNavigations(entityType, NavigationPropertyPaths[i]);
@@ -164,12 +165,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                         if (navigations.Any())
                         {
                             matchingNavigations = true;
+                            foreach (var navigation in navigations)
+                            {
+                                var newNavigationPath = new List<INavigation>(navigationPath) { navigation };
+                                newNavigationPaths.Add(newNavigationPath);
+                            }
                         }
-
-                        foreach (var navigation in navigations)
+                        else
                         {
-                            var newNavigationPath = new List<INavigation>(navigationPath) { navigation };
-                            newNavigationPaths.Add(newNavigationPath);
+                            completedNavigationPaths.Add(navigationPath);
                         }
                     }
 
@@ -179,10 +183,12 @@ namespace Microsoft.EntityFrameworkCore.Query.ResultOperators.Internal
                             CoreStrings.IncludeBadNavigation(NavigationPropertyPaths[i], entityType.DisplayName()));
                     }
 
-                    navigationPaths.AddRange(newNavigationPaths);
+                    navigationPaths = newNavigationPaths;
                 }
 
-                _navigationPaths = navigationPaths.Select(p => p.ToArray()).ToList();
+                _navigationPaths = completedNavigationPaths.Select(p => p.ToArray())
+                    .Concat(navigationPaths.Select(p => p.ToArray()))
+                    .ToList();
             }
 
             return _navigationPaths;
