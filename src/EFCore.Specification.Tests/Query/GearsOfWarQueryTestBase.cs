@@ -2921,18 +2921,6 @@ namespace Microsoft.EntityFrameworkCore.Query
             AssertIncludeQuery<LocustLeader>(
                 lls => lls.Include("DefeatedBy"),
                 new List<IExpectedInclude> { new ExpectedInclude<LocustCommander>(lc => lc.DefeatedBy, "DefeatedBy") });
-
-            //using (var context = CreateContext())
-            //{
-            //    var query = context.LocustLeaders.Include("DefeatedBy");
-            //    var result = query.ToList();
-
-            //    var included = result.OfType<LocustCommander>().Where(lc => lc.DefeatedBy != null).ToList();
-
-            //    Assert.Equal(6, result.Count);
-            //    Assert.Equal(1, included.Count);
-            //    Assert.Equal("Marcus", included[0].DefeatedBy.Nickname);
-            //}
         }
 
         [ConditionalFact]
